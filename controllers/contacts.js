@@ -47,7 +47,7 @@ const updateContact = async (req, res) => {
   res.json(updatedContact);
 };
 
-const updateFavorite = async (req, res) => {
+const updateStatusContact = async (req, res) => {
   const body = req.body;
   if (!body) {
     throw HttpError(400, "missing field favorite");
@@ -68,5 +68,5 @@ module.exports = {
   removeContact: ctrlWrapper(removeContact),
   addContact: ctrlWrapper(addContact),
   updateContact: ctrlWrapper(updateContact),
-  updateFavorite: ctrlWrapper(updateFavorite),
+  updateStatusContact: ctrlWrapper(updateStatusContact),
 };
