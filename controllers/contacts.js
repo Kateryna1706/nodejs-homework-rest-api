@@ -14,8 +14,10 @@ const listContacts = async (req, res) => {
 };
 
 const getContactById = async (req, res) => {
+  const { _id: owner } = req.user;
   const { contactId } = req.params;
-  const result = await Contact.findById(contactId);
+  const result = await Contact.find({ _id: contactId, owner });
+  console.log(result);
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -23,12 +25,15 @@ const getContactById = async (req, res) => {
 };
 
 const removeContact = async (req, res) => {
+  const { _id: owner } = req.user;
   const { contactId } = req.params;
-  const deletedContacts = await Contact.findByIdAndRemove(contactId);
-  if (!deletedContacts) {
+  const result = await Contact.find({ _id: contactId, owner });
+  if (!result) {
     throw HttpError(404, "Not found");
   }
-  res.json({ message: "Contact deleted" });
+  const deletedContacts = await Contact.findByIdAndRemove(contactId);
+
+  res.json(deletedContacts);
 };
 
 const addContact = async (req, res) => {
@@ -40,32 +45,38 @@ const addContact = async (req, res) => {
 };
 
 const updateContact = async (req, res) => {
+  const { _id: owner } = req.user;
   const body = req.body;
   if (!body) {
     throw HttpError(400, "missing fields");
   }
   const { contactId } = req.params;
+  const result = await Contact.find({ _id: contactId, owner });
+  if (!result) {
+    throw HttpError(404, "Not found");
+  }
   const updatedContact = await Contact.findByIdAndUpdate(contactId, body, {
     new: true,
   });
-  if (!updatedContact) {
-    throw HttpError(404, "Not found");
-  }
+
   res.json(updatedContact);
 };
 
 const updateStatusContact = async (req, res) => {
+  const { _id: owner } = req.user;
   const body = req.body;
   if (!body) {
     throw HttpError(400, "missing field favorite");
   }
   const { contactId } = req.params;
+  const contact = await Contact.find({ _id: contactId, owner });
+  if (!contact) {
+    throw HttpError(404, "Not found");
+  }
   const result = await Contact.findByIdAndUpdate(contactId, body, {
     new: true,
   });
-  if (!result) {
-    throw HttpError(404, "Not found");
-  }
+
   res.json(result);
 };
 
