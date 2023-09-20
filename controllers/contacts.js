@@ -1,4 +1,3 @@
-const { nanoid } = require("nanoid");
 const { Contact } = require("../models/contact");
 const { HttpError, ctrlWrapper } = require("../helpers");
 
@@ -39,8 +38,7 @@ const removeContact = async (req, res) => {
 const addContact = async (req, res) => {
   const { _id: owner } = req.user;
   const { name, email, phone } = req.body;
-  const id = nanoid();
-  const newContact = await Contact.create({ id, name, email, phone, owner });
+  const newContact = await Contact.create({ name, email, phone, owner });
   res.status(201).json(newContact);
 };
 
