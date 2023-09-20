@@ -21,6 +21,10 @@ const contactSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: String,
+      required: true,
+    },
   },
   { versionKey: false, timestamps: true }
 );
