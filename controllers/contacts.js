@@ -16,8 +16,7 @@ const listContacts = async (req, res) => {
 const getContactById = async (req, res) => {
   const { _id: owner } = req.user;
   const { contactId } = req.params;
-  const result = await Contact.find({ _id: contactId, owner });
-  console.log(result);
+  const result = await Contact.findOne({ _id: contactId, owner });
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -27,13 +26,14 @@ const getContactById = async (req, res) => {
 const removeContact = async (req, res) => {
   const { _id: owner } = req.user;
   const { contactId } = req.params;
-  const result = await Contact.find({ _id: contactId, owner });
-  if (!result) {
+  const deletedContact = await Contact.findOneAndRemove({
+    _id: contactId,
+    owner,
+  });
+  if (!deletedContact) {
     throw HttpError(404, "Not found");
   }
-  const deletedContacts = await Contact.findByIdAndRemove(contactId);
-
-  res.json(deletedContacts);
+  res.json(deletedContact);
 };
 
 const addContact = async (req, res) => {
@@ -51,14 +51,17 @@ const updateContact = async (req, res) => {
     throw HttpError(400, "missing fields");
   }
   const { contactId } = req.params;
-  const result = await Contact.find({ _id: contactId, owner });
-  if (!result) {
+
+  const updatedContact = await Contact.findOneAndUpdate(
+    { _id: contactId, owner },
+    body,
+    {
+      new: true,
+    }
+  );
+  if (!updatedContact) {
     throw HttpError(404, "Not found");
   }
-  const updatedContact = await Contact.findByIdAndUpdate(contactId, body, {
-    new: true,
-  });
-
   res.json(updatedContact);
 };
 
@@ -69,14 +72,17 @@ const updateStatusContact = async (req, res) => {
     throw HttpError(400, "missing field favorite");
   }
   const { contactId } = req.params;
-  const contact = await Contact.find({ _id: contactId, owner });
-  if (!contact) {
+
+  const result = await Contact.findOneAndUpdate(
+    { _id: contactId, owner },
+    body,
+    {
+      new: true,
+    }
+  );
+  if (!result) {
     throw HttpError(404, "Not found");
   }
-  const result = await Contact.findByIdAndUpdate(contactId, body, {
-    new: true,
-  });
-
   res.json(result);
 };
 
